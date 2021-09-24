@@ -61,6 +61,7 @@ async function callingPlayerIdFetchingFromMobileNoApi(mobNo)
     const axios = require('axios');
 
 await axios.get(`http://localhost:8081/api/swm/report/getPlayerId/${mobNo}`).then(resp => {
+
     console.log(resp.data);
     fetchedArray = resp.data;
 });
@@ -77,19 +78,19 @@ res.data.form;
 res.data.headers['application/json;charset=utf-8']; 
 }
 
-
-async function callingsetSmartBinGarbageLevelApi(dataToBeUpdated)
-{
-const res = await axios.put('http://172.22.7.105:8081/api/swm/si/setSmartBinGarbageLevel/', dataToBeUpdated);
-res.data.form; 
-//res.data.headers['application/json;charset=utf-8']; 
-}
-
 async function callingUpdatingNodeDetailsUpdateApi(dataToBeUpdated)
 {
   const axios = require('axios');
 const res = await axios.put('http://172.22.7.105:8081/api/swm/report/updateNodeStatus/', dataToBeUpdated);
 console.log("callingUpdatingNodeDetailsUpdateApiRes--------------->",res.data)
+res.data.form; 
+//res.data.headers['application/json;charset=utf-8']; 
+}
+
+async function callingsetSmartBinGarbageLevelApi(dataToBeUpdated)
+{
+  const axios = require('axios');
+const res = await axios.put('http://172.22.7.105:8081/api/swm/si/setSmartBinGarbageLevel/', dataToBeUpdated).catch(err => console.log(err.message));
 res.data.form; 
 //res.data.headers['application/json;charset=utf-8']; 
 }

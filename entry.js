@@ -1,5 +1,6 @@
 const apicallingmodule = require('./apicalling')
 var as = require('./RabbitMq/ConnectionFactory')
+var mqsender = require('./RabbitMq/mqsender')
 var amqp = require('amqplib/callback_api');
 
 console.log('This is Entry Class')
@@ -101,7 +102,13 @@ amqp.connect('amqp://guest:guest@127.0.0.1', function(error0, connection) {
             console.log(SI_WCM_READER_DATA_QUEUE_MESSAGE.rfidReaderId);
             console.log(SI_WCM_READER_DATA_QUEUE_MESSAGE.tagId);
           var tagId = SI_WCM_READER_DATA_QUEUE_MESSAGE.tagId;
+          
+        
           var fetchedjson = await apicallingmodule.callingNodeDetailsFetchingApiForGivenTagId(tagId); 
+          
+         
+            console.log("error in api call");
+          
           console.log("fetchedjson--------------------->",fetchedjson);
           console.log(fetchedjson.nodeType) ;
           console.log(fetchedjson.nodeId) ;
@@ -110,13 +117,18 @@ amqp.connect('amqp://guest:guest@127.0.0.1', function(error0, connection) {
           console.log(fetchedjson.citizenMobNo) ;
           console.log(fetchedjson.tripId) ;
           console.log(fetchedjson.driverId);
-         
-         var putBody = {"zoneId":"","wardId":fetchedjson.wardId,"nodeType":fetchedjson.nodeType,"nodeId":fetchedjson.nodeId,"nodeStatus":2,"collectionTime":""};
+          var putBody = {"zoneId":"","wardId":fetchedjson.wardId,"nodeType":fetchedjson.nodeType,"nodeId":fetchedjson.nodeId,"nodeStatus":2,"collectionTime":""};
           var WCM_WVM_COLLECTION_STATUS_OF_NODE_DATA = {"msgId":SI_WCM_READER_DATA_QUEUE_MESSAGE.msgId,"wardId":fetchedjson.wardId,"nodeType":fetchedjson.nodeType,"nodeId":fetchedjson.nodeId,"nodeStatus":2};
           var WCM_MOBLE2_COLLECTION_STATUS_OF_NODE_DATA = {"msgId":SI_WCM_READER_DATA_QUEUE_MESSAGE.msgId,"wardId":fetchedjson.wardId,"nodeType":fetchedjson.nodeType,"nodeId":fetchedjson.nodeId,"nodeStatus":""};
           var WCM_MOBLE1_COLLECTION_STATUS_OF_NODE_DATA = {"msgId":SI_WCM_READER_DATA_QUEUE_MESSAGE.msgId,"wardId":fetchedjson.wardId,"nodeType":fetchedjson.nodeType,"nodeId":fetchedjson.nodeId,"nodeStatus":"","driverId":fetchedjson.driverId,"mobileNo": fetchedjson.driverMobNo};
           console.log(putBody);
+          try{
           await apicallingmodule.callingUpdatingNodeDetailsUpdateApi(putBody);
+          }
+          catch(e)
+          {
+            console.log("error in api call");
+          }
        //   await apicallingmodule.WCM_MOBLE2_COLLECTION_STATUS_OF_NODE_NOTIFICATION(mobilestobenotified,WCM_MOBLE2_COLLECTION_STATUS_OF_NODE_DATA);
        //   await apicallingmodule.WCM_MOBLE1_COLLECTION_STATUS_OF_NODE_NOTIFICATION(mobilestobenotified,WCM_MOBLE1_COLLECTION_STATUS_OF_NODE_DATA);
          
@@ -145,18 +157,23 @@ amqp.connect('amqp://guest:guest@127.0.0.1', function(error0, connection) {
           console.log(SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.msgId);
           console.log(SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName);
           console.log(SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel);
-
           var putBody = {"smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName,"garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel};
          // var putBody = { "smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName, "capacity":200, "batteryLife":4, "solarBased":1, "startBinPointLat":21.11, "startBinPointLong":72.11, "gpsEnabled":1, "contactNo":"9988776655", "zoneId":1, "wardId":1, "muhallaNme":"M1", "address":"ghaziabad", "capacityAlert":0, "alertDateTime":"", "binTemp":0, "nodeStatus":0 , "tripEnabled":0, "tripId":0, "garbageCollectionTimeStamp":"", "qrCode":"sfdf323", "issueStatus":1, "garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel, "alertTimeStmp":""};
          // var fetchedjson = await apicallingmodule.callingeditSmartBinApi(putBody); 
+         try{
          var fetchedjson = await apicallingmodule.callingsetSmartBinGarbageLevelApi(putBody);
+         }
+         catch(e)
+         {
+           console.error("error in api call");
+         }
 
-          var WCM_WVM_SMART_BIN_ALERT_DATA = {"msgId":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.msgId,"smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName,"garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel};
-          var WCM_DRIVER_MOBILE_SMART_BIN_ALERT_DATA = {"msgId":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.msgId,"smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName,"garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel};
+         var WCM_WVM_SMART_BIN_ALERT_DATA = {"msgId":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.msgId,"smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName,"garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel};
+         var WCM_DRIVER_MOBILE_SMART_BIN_ALERT_DATA = {"msgId":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.msgId,"smartBinName":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.smartBinName,"garbageLevel":SI_WCM_DA_SMART_BIN_ALERT_QUEUE_MESSAGE.garbageLevel};
           // socket.on("connect", () => 
           // {
-              
-              io.sockets.emit("WCM_WVM_SMART_BIN_ALERT ",WCM_WVM_SMART_BIN_ALERT_DATA) ;
+              console.log("About to send to web............");
+              io.sockets.emit("WCM_WVM_SMART_BIN_ALERT",WCM_WVM_SMART_BIN_ALERT_DATA) ;
               io.sockets.emit("WCM_DRIVER_MOBILE_SMART_BIN_ALERT",WCM_DRIVER_MOBILE_SMART_BIN_ALERT_DATA) ;
         }
               
@@ -229,6 +246,7 @@ amqp.connect('amqp://guest:guest@127.0.0.1', function(error0, connection) {
 
  socket.on('MOBILE_APP_WCM_SEND_VAHICLE_ARRIVAL_TRIGGER', async function (data) {
   
+  console.log("MOBILE_APP_WCM_SEND_VAHICLE_ARRIVAL_TRIGGER");
   console.log(data.msgId);
   console.log(data.communityPointName);
   console.log(data.arrivalInMin);
@@ -243,6 +261,7 @@ amqp.connect('amqp://guest:guest@127.0.0.1', function(error0, connection) {
 
 
 socket.on('WVM_WCM_ISSUE_STATUS_UPDATE', async function (data) {
+  console.log("WVM_WCM_ISSUE_STATUS_UPDATE");
   
   console.log(data.msgId);
   console.log(data.issueType);
@@ -258,7 +277,7 @@ socket.on('WVM_WCM_ISSUE_STATUS_UPDATE', async function (data) {
 });
 
 socket.on('WVM_WCM_TRIP_ASSIGNMENT_ALERT', function (data) {
-  
+  console.log("WVM_WCM_TRIP_ASSIGNMENT_ALERT")
   console.log(data.msgId);
   console.log(data.tripId);
   console.log(data.driverId);
@@ -271,7 +290,7 @@ socket.on('WVM_WCM_TRIP_ASSIGNMENT_ALERT', function (data) {
 
 socket.on('WVM_WCM_TRIP_UPDATE_ALERT', function (data) {
   
-  
+  console.log("WVM_WCM_TRIP_UPDATE_ALERT");
   console.log(data.msgId);
   console.log(data.tripId);
   console.log(data.driverId);
@@ -286,7 +305,7 @@ socket.on('WVM_WCM_TRIP_UPDATE_ALERT', function (data) {
 
 
 socket.on('MOBILE1_WCM_COLLECTION_STATUS_OF_NODE', function (data) {
-  
+  console.log("MOBILE1_WCM_COLLECTION_STATUS_OF_NODE");
   console.log(data.msgId);
   console.log(data.mobileNo);
   console.log(data.nodeType);
@@ -304,7 +323,7 @@ socket.on('MOBILE1_WCM_COLLECTION_STATUS_OF_NODE', function (data) {
 
 
 socket.on('MOBILE_WCM_ISSUE_REGISTERATION_ALERT', function (data) {
-  
+ console.log("MOBILE_WCM_ISSUE_REGISTERATION_ALERT") ;
   console.log(data.msgId);
   console.log(data.issueType);
   console.log(data.issueId);
@@ -317,6 +336,7 @@ socket.on('MOBILE_WCM_ISSUE_REGISTERATION_ALERT', function (data) {
 
 socket.on('MOBILE_WCM_ISSUE_DELETE_ALERT', function (data) {
   //structure which will be received is not specified  
+  console.log("MOBILE_WCM_ISSUE_DELETE_ALERT");
   console.log(data.msgId);
   console.log(data.mobileNo);
   console.log(data.nodeType);
@@ -329,7 +349,7 @@ socket.on('MOBILE_WCM_ISSUE_DELETE_ALERT', function (data) {
 
 
 socket.on('WVM_WCM_CALCULATE_AUTO_TRIP', function (data) {
-  
+  console.log("WVM_WCM_CALCULATE_AUTO_TRIP");
   console.log(data.msgId);
   console.log(data.wardNo);
   var WCM_DA_CALCULATE_AUTO_TRIP_MESSAGE = {"msgId":data.msgId,"wardNo":data.wardNo};
@@ -338,6 +358,7 @@ socket.on('WVM_WCM_CALCULATE_AUTO_TRIP', function (data) {
 });
 
 socket.on('WVM_WCM_FETCH_CAMERA_DETAILS', function (data) {
+  console.log("WVM_WCM_FETCH_CAMERA_DETAILS");
   
   console.log(data.msgId);
   
